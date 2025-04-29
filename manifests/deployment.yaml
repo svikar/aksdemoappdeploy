@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: aks-demo-app
-        image: <your-acr-name>.azurecr.io/aks-demo-app:$(Build.BuildId)
+        image: jubbuseacrinmh.azurecr.io/aks-demo-app:$(Build.BuildId)
         ports:
         - containerPort: 3000
 ---
