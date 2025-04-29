@@ -1,0 +1,39 @@
+trigger:
+- main
+
+variables:
+  imageName: 'aks-demo-app'
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: Docker@2
+      inputs:
+        containerRegistry: '<your-ACR-service-connection>'
+        repository: $(imageName)
+        command: 'buildAndPush'
+        Dockerfile: '**/Dockerfile'
+        tags: |
+          $(Build.BuildId)
+
+- stage: Deploy
+  dependsOn: Build
+  jobs:
+  - job: Deploy
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: Kubernetes@1
+      inputs:
+        connectionType: 'Azure Resource Manager'
+        azureSubscriptionEndpoint: '<your-azure-subscription>'
+        azureResourceGroup: '<your-resource-group>'
+        kubernetesCluster: '<your-aks-cluster-name>'
+        namespace: default
+        command: apply
+        useConfigurationFile: true
+        configuration: 'manifests/deployment.yaml'
