@@ -26,6 +26,11 @@ stages:
   jobs:
   - job: Deploy
     steps:
+    - script: |
+        echo "Replacing build ID in deployment.yaml..."
+        sed -i "s|__BUILD_ID__|$(Build.BuildId)|g" manifests/deployment.yaml
+      displayName: 'Replace BUILD_ID token in deployment.yaml'
+
     - task: Kubernetes@1
       inputs:
         connectionType: 'Azure Resource Manager'
