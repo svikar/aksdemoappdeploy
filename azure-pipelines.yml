@@ -1,3 +1,6 @@
+pool:
+  name: devagent
+
 trigger:
 - main
 
@@ -8,8 +11,6 @@ stages:
 - stage: Build
   jobs:
   - job: Build
-    pool:
-      vmImage: 'ubuntu-latest'
     steps:
     - task: Docker@2
       inputs:
@@ -24,8 +25,6 @@ stages:
   dependsOn: Build
   jobs:
   - job: Deploy
-    pool:
-      vmImage: 'ubuntu-latest'
     steps:
     - task: Kubernetes@1
       inputs:
