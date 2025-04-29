@@ -1,5 +1,5 @@
 pool:
-  name: devagent
+  name: Default
 
 trigger:
 - main
