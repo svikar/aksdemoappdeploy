@@ -15,6 +15,11 @@ spec:
       containers:
         - name: aks-demo-app
           image: acr523.azurecr.io/aks-demo-app:__BUILD_ID__
+          env:
+          - name: DB_USERNAME
+            value: "$(db-username)"
+          - name: DB_PASSWORD
+            value: "$(db-password)"
           ports:
             - containerPort: 3000
           volumeMounts:
