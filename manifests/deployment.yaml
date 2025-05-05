@@ -13,10 +13,17 @@ spec:
         app: aks-demo
     spec:
       containers:
-      - name: aks-demo-app
-        image: acr523.azurecr.io/aks-demo-app:__BUILD_ID__
-        ports:
-        - containerPort: 3000
+        - name: aks-demo-app
+          image: acr523.azurecr.io/aks-demo-app:__BUILD_ID__
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - mountPath: /mnt/azuredisk
+              name: azuredisk
+      volumes:
+        - name: azuredisk
+          persistentVolumeClaim:
+            claimName: pvc-azuredisk
 ---
 apiVersion: v1
 kind: Service
@@ -25,7 +32,7 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-  - port: 80
-    targetPort: 3000
+    - port: 80
+      targetPort: 3000
   selector:
     app: aks-demo
