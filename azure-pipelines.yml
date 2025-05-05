@@ -35,6 +35,13 @@ stages:
         RunAsPreJob: true
     
     - script: |
+        sed -i "s|\$(db-username)|${DB_USERNAME}|g" manifests/deployment.yaml
+        sed -i "s|\$(db-password)|${DB_PASSWORD}|g" manifests/deployment.yaml
+      env:
+        DB_USERNAME: $(db-username)
+        DB_PASSWORD: $(db-password)
+      
+    - script: |
         echo "Replacing build ID in deployment.yaml..."
         sed -i "s|__BUILD_ID__|$(Build.BuildId)|g" manifests/deployment.yaml
       displayName: 'Replace BUILD_ID token in deployment.yaml'
