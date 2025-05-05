@@ -26,6 +26,14 @@ stages:
   jobs:
   - job: Deploy
     steps:
+      
+    - task: AzureKeyVault@2
+      inputs:
+        azureSubscription: 'AKS-Connection'
+        KeyVaultName: 'mykeyvault-523'
+        SecretsFilter: '*'
+        RunAsPreJob: true
+    
     - script: |
         echo "Replacing build ID in deployment.yaml..."
         sed -i "s|__BUILD_ID__|$(Build.BuildId)|g" manifests/deployment.yaml
