@@ -17,9 +17,15 @@ spec:
           image: acr523.azurecr.io/aks-demo-app:__BUILD_ID__
           env:
           - name: DB_USERNAME
-            value: DBUSERNAME
+            valueFrom: 
+              secretkeyRef:
+                name: database-secrets
+                key: username
           - name: DB_PASSWORD
-            value: DBPASSWORD
+            valueFrom: 
+              secretkeyRef:
+                name: database-secrets
+                key: password       
           ports:
             - containerPort: 3000
           volumeMounts:
