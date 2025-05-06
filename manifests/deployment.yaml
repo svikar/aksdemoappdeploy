@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,16 +17,16 @@ spec:
         - name: aks-demo-app
           image: acr523.azurecr.io/aks-demo-app:__BUILD_ID__
           env:
-          - name: DB_USERNAME
-            valueFrom: 
-              secretkeyRef:
-                name: database-secrets
-                key: username
-          - name: DB_PASSWORD
-            valueFrom: 
-              secretkeyRef:
-                name: database-secrets
-                key: password       
+            - name: DB_USERNAME
+              valueFrom:
+                secretkeyRef:
+                  name: database-secrets
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretkeyRef:
+                  name: database-secrets
+                  key: password
           ports:
             - containerPort: 3000
           volumeMounts:
@@ -35,6 +36,7 @@ spec:
         - name: azuredisk
           persistentVolumeClaim:
             claimName: pvc-azuredisk
+
 ---
 apiVersion: v1
 kind: Service
