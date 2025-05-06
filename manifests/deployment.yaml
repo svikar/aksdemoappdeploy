@@ -19,12 +19,12 @@ spec:
           env:
             - name: DB_USERNAME
               valueFrom:
-                secretkeyRef:
+                secretKeyRef:
                   name: database-secrets
                   key: username
             - name: DB_PASSWORD
               valueFrom:
-                secretkeyRef:
+                secretKeyRef:
                   name: database-secrets
                   key: password
           ports:
