@@ -2,54 +2,54 @@ pool:
   name: Default
 
 trigger:
-- main
+  - main
 
 variables:
-  imageName: 'aks-demo-app'
+  imageName: "aks-demo-app"
 
 stages:
-- stage: Build
-  jobs:
-  - job: Build
-    steps:
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'ACRConnection'
-        repository: $(imageName)
-        command: 'buildAndPush'
-        Dockerfile: '**/Dockerfile'
-        tags: |
-          $(Build.BuildId)
+  - stage: Build
+    jobs:
+      - job: Build
+        steps:
+          - task: Docker@2
+            inputs:
+              containerRegistry: "ACRConnection"
+              repository: $(imageName)
+              command: "buildAndPush"
+              Dockerfile: "**/Dockerfile"
+              tags: |
+                $(Build.BuildId)
 
-- stage: Deploy
-  dependsOn: Build
-  jobs:
-  - job: Deploy
-    steps:
-      
-    - task: AzureKeyVault@2
-      inputs:
-        azureSubscription: 'AKS-Connection'
-        KeyVaultName: 'mykeyvault-523'
-        SecretsFilter: '*'
-        RunAsPreJob: true
-    
-    - script: |
-        sed -i "s|DBUSERNAME|$(db-username)|g" manifests/deployment.yaml
-        sed -i "s|DBPASSWORD|$(db-password)|g" manifests/deployment.yaml
-      
-    - script: |
-        echo "Replacing build ID in deployment.yaml..."
-        sed -i "s|__BUILD_ID__|$(Build.BuildId)|g" manifests/deployment.yaml
-      displayName: 'Replace BUILD_ID token in deployment.yaml'
+  - stage: Deploy
+    dependsOn: Build
+    jobs:
+      - job: Deploy
+        steps:
+          - task: AzureKeyVault@2
+            inputs:
+              azureSubscription: "AKS-Connection"
+              KeyVaultName: "mykeyvault-523"
+              SecretsFilter: "*"
+              RunAsPreJob: true
 
-    - task: Kubernetes@1
-      inputs:
-        connectionType: 'Azure Resource Manager'
-        azureSubscriptionEndpoint: 'AKS-Connection'
-        azureResourceGroup: 'AKSGroup'
-        kubernetesCluster: 'DevCluster'
-        namespace: default
-        command: apply
-        useConfigurationFile: true
-        configuration: 'manifests/deployment.yaml'
+          - script: |
+              sed -i "s|DBUSERNAME|$(db-username)|g" manifests/deployment.yaml
+              sed -i "s|DBPASSWORD|$(db-password)|g" manifests/deployment.yaml
+
+          - script: |
+              echo "Replacing build ID in deployment.yaml..."
+              sed -i "s|__BUILD_ID__|$(Build.BuildId)|g" manifests/deployment.yaml
+            displayName: "Replace BUILD_ID token in deployment.yaml"
+
+          - task: Kubernetes@1
+            inputs:
+              connectionType: "Azure Resource Manager"
+              azureSubscriptionEndpoint: "AKS-Connection"
+              azureResourceGroup: "AKSGroup"
+              kubernetesCluster: "DevCluster"
+              namespace: default
+              command: apply
+              useConfigurationFile: true
+              configuration: "manifests/deployment.yaml"
+              arguments: "--record"
